@@ -18,6 +18,14 @@ var app = new Vue({
             coverPhoto: '',
             active: false
         },
+        htmlElements: {
+            select: {
+                key: ''
+            },
+            input: {
+                filter: ''
+            }
+        }
     },
     methods: {
         create: function(e){
@@ -40,6 +48,21 @@ var app = new Vue({
             Object.keys(this.form).forEach(function(key,index) {
                 self[key] = '';
             });
+        },
+        filterOnChange: function(e){
+            this.htmlElements.select.key = e.target.value;
+        },
+        filterList: function(){
+            if(this.htmlElements.select.key !== ''){
+                axios.get('http://localhost:250/api/v1/living_places').then(response => {
+                    this.households = response.data['hydra:member'].filter(house => 
+                        (this.htmlElements.select.key == 'name' && house.name.includes(this.htmlElements.input.filter)) ||
+                        (this.htmlElements.select.key == 'city' && house.city.includes(this.htmlElements.input.filter)) ||
+                        (this.htmlElements.select.key == 'province' && house.province.includes(this.htmlElements.input.filter)) ||
+                        (this.htmlElements.select.key == 'postalCode' && house.postalCode.includes(this.htmlElements.input.filter))
+                    );
+                });
+            }
         }
     },
     mounted() {
